@@ -14,8 +14,8 @@ defmodule Streamex.Config do
   """
   def base_url do
     case region do
-      "" -> "https://#{@api_url}/#{version}"
-      _ -> "https://#{region}-#{@api_url}/#{version}"
+      "" -> "https://#{@api_url}/v#{version}/"
+      _ -> "https://#{region}-#{@api_url}/v#{version}/"
     end
   end
 
