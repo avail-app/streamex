@@ -28,7 +28,7 @@ defmodule Streamex.Mixfile do
 
   defp deps do
     [
-      {:httpoison, "~> 0.12"},
+      {:httpoison, "~> 0.13.0"},
       {:poison, "~> 3.1"},
       {:joken, "~> 1.2"},
       {:timex, "~> 3.1"},
