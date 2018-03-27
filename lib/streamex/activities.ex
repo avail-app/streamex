@@ -138,7 +138,7 @@ defmodule Streamex.Activities do
     Request.new
     |> with_method(:post)
     |> with_path(endpoint_update())
-    |> with_token("*", "activities", "write")
+    |> with_token(feed, "activities", "write")
     |> with_body(body_create_update_activities(activities))
     |> commit_request
     |> handle_response
