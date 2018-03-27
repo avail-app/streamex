@@ -35,9 +35,7 @@ defmodule Streamex.Activities do
     |> with_path(endpoint_get(feed))
     |> with_token(feed, "feed", "read")
     |> with_params(activity_get_params(opts))
-    |> Client.prepare_request
-    |> Client.sign_request
-    |> Client.execute_request
+    |> commit_request
     |> handle_response
   end
 
@@ -81,9 +79,7 @@ defmodule Streamex.Activities do
     |> with_path(endpoint_create(feed))
     |> with_token(feed, "feed", "write")
     |> with_body(body_create_update_activities(activities))
-    |> Client.prepare_request
-    |> Client.sign_request
-    |> Client.execute_request
+    |> commit_request
     |> handle_response
   end
 
@@ -113,9 +109,7 @@ defmodule Streamex.Activities do
     |> with_method(:post)
     |> with_path(endpoint_add_to_many())
     |> with_body(body_create_batch_activities(feeds, activity))
-    |> Client.prepare_request
-    |> Client.sign_request
-    |> Client.execute_request
+    |> commit_request
     |> handle_response
   end
 
@@ -146,9 +140,7 @@ defmodule Streamex.Activities do
     |> with_path(endpoint_update())
     |> with_token(feed, "activities", "write")
     |> with_body(body_create_update_activities(activities))
-    |> Client.prepare_request
-    |> Client.sign_request
-    |> Client.execute_request
+    |> commit_request
     |> handle_response
   end
 
@@ -182,9 +174,7 @@ defmodule Streamex.Activities do
     |> with_path(endpoint_remove(feed, id))
     |> with_token(feed, "feed", "delete")
     |> with_params(params)
-    |> Client.prepare_request
-    |> Client.sign_request
-    |> Client.execute_request
+    |> commit_request
     |> handle_response
   end
 
@@ -193,13 +183,20 @@ defmodule Streamex.Activities do
     Keyword.merge(defaults, opts) |> Enum.into(%{})
   end
 
-  def handle_response(%{"exception" => exception}), do: {:error, exception}
-  def handle_response(%{"results" => results}), do:
-    {:ok, Enum.map(results, &Activity.to_struct(&1))}
-  def handle_response(%{"activities" => results}), do:
-    {:ok, Enum.map(results, &Activity.to_struct(&1))}
-  def handle_response(%{"removed" => id}), do: {:ok, id}
-  def handle_response(%{"duration" => _}), do: {:ok, nil}
+  defp commit_request(request) do
+    request
+    |> Client.prepare_request
+    |> Client.sign_request
+    |> Client.execute_request
+  end
+
+  defp handle_response(%{"exception" => exception}), do: {:error, exception}
+  defp handle_response(%{"results" => results}), do:
+    {:ok, Enum.map(results, &(handle_response/1))}
+  defp handle_response(%{"activities" => results}), do:
+    {:ok, Enum.map(results, &(Activity.to_struct/1))}
+  defp handle_response(%{"removed" => id}), do: {:ok, id}
+  defp handle_response(%{"duration" => _}), do: {:ok, nil}
 
   defp endpoint_get(%Feed{} = feed) do
     <<"feed/", feed.slug :: binary, "/", feed.user_id :: binary, "/">>
