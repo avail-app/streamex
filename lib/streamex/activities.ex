@@ -192,7 +192,9 @@ defmodule Streamex.Activities do
 
   defp handle_response(%{"exception" => exception}), do: {:error, exception}
   defp handle_response(%{"results" => results}), do:
-    {:ok, Enum.map(results, &(handle_response/1))}
+    {:ok, Enum.reduce(results, [], fn(result, acc) ->
+      with {:ok, activity} <- handle_response(result), do: acc ++ activity
+    end)}
   defp handle_response(%{"activities" => results}), do:
     {:ok, Enum.map(results, &(Activity.to_struct/1))}
   defp handle_response(%{"removed" => id}), do: {:ok, id}
