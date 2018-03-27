@@ -56,7 +56,8 @@ defmodule Streamex.Request do
   Attaches a `Streamex.Token` to a `Streamex.Request`
   """
   def with_token(%__MODULE__{} = r, feed, resource, action) do
-    %{r | token: %Token{feed_id: feed.id, resource: resource, action: action}}
+    feed_id = feed_id(feed)
+    %{r | token: %Token{feed_id: feed_id, resource: resource, action: action}}
   end
 
   @doc """
@@ -71,4 +72,7 @@ defmodule Streamex.Request do
       {:timeout, Config.timeout}
     ]
   end
+
+  defp feed_id(%{id: feed_id}), do: feed_id
+  defp feed_id(feed), do: feed
 end
