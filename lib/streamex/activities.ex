@@ -199,6 +199,7 @@ defmodule Streamex.Activities do
     {:ok, Enum.map(results, &(Activity.to_struct/1))}
   defp handle_response(%{"removed" => id}), do: {:ok, id}
   defp handle_response(%{"duration" => _}), do: {:ok, nil}
+  defp handle_response({:error, message}), do: {:error, message}
 
   defp endpoint_get(%Feed{} = feed) do
     <<"feed/", feed.slug :: binary, "/", feed.user_id :: binary, "/">>
