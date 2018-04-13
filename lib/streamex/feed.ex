@@ -191,11 +191,12 @@ defmodule Streamex.Feed do
   end
 
   @doc false
+  defp handle_response({:ok, nil}), do: {:ok, nil}
+  defp handle_response({:error, message}), do: {:error, message}
   defp handle_response(%{"exception" => exception}), do: {:error, exception}
   defp handle_response(%{"results" => results}), do:
     {:ok, Enum.map(results, &Poison.Decode.decode(&1, as: %Follow{}))}
   defp handle_response(%{"duration" => _}), do: {:ok, nil}
-  defp handle_response({:error, message}), do: {:error, message}
 
   defp validate([string | t]), do: validate(string) && validate(t)
   defp validate([]), do: true

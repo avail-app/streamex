@@ -38,8 +38,13 @@ defmodule Streamex.Client do
   Returns {:ok, json}, or {:error, message} if something went wrong.
   """
   def execute_request(%Request{} = req) do
-    request(req.method, req.url, req.body, req.headers, req.options)
-    |> parse_response
+    case Mix.env do
+      :test ->
+        {:ok, nil}
+      _ ->
+        request(req.method, req.url, req.body, req.headers, req.options)
+        |> parse_response
+    end
   end
 
   @doc false
@@ -69,5 +74,9 @@ defmodule Streamex.Client do
 
     headers = [api_key_header, date_header, auth_header] ++ req.headers
     %{req | headers: headers}
+  end
+
+  defp is_test_mode do
+
   end
 end

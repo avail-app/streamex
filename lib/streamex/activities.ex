@@ -66,11 +66,10 @@ defmodule Streamex.Activities do
 
   """
   def add(feed, %{} = activity) do
-    {status, results} = add(feed, [activity])
-
-    case status do
-      :ok -> {status, Enum.at(results, 0)}
-      :error -> {status, results}
+    case add(feed, [activity]) do
+      {:ok, nil} -> {:ok, nil}
+      {:ok, results} -> {:ok, Enum.at(results, 0)}
+      response -> response
     end
   end
   def add(feed, [%{} | _] = activities) do
@@ -190,6 +189,8 @@ defmodule Streamex.Activities do
     |> Client.execute_request
   end
 
+  defp handle_response({:ok, nil}), do: {:ok, nil}
+  defp handle_response({:error, message}), do: {:error, message}
   defp handle_response(%{"exception" => exception}), do: {:error, exception}
   defp handle_response(%{"results" => results}), do:
     {:ok, Enum.reduce(results, [], fn(result, acc) ->
@@ -199,7 +200,6 @@ defmodule Streamex.Activities do
     {:ok, Enum.map(results, &(Activity.to_struct/1))}
   defp handle_response(%{"removed" => id}), do: {:ok, id}
   defp handle_response(%{"duration" => _}), do: {:ok, nil}
-  defp handle_response({:error, message}), do: {:error, message}
 
   defp endpoint_get(%Feed{} = feed) do
     <<"feed/", feed.slug :: binary, "/", feed.user_id :: binary, "/">>
