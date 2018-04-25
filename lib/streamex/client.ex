@@ -37,8 +37,8 @@ defmodule Streamex.Client do
   Returns {:ok, json}, or {:error, message} if something went wrong.
   """
   def execute_request(%Request{} = req) do
-    case Mix.env do
-      :test ->
+    case Application.get_env(:streamex, :test_mode) do
+      true ->
         {:ok, nil}
       _ ->
         request(req.method, req.url, req.body, req.headers, req.options)
