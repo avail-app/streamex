@@ -6,7 +6,7 @@ config :streamex,
   region: "",
   key: "8andj8c67ycp",
   secret: "6anbcfx3a5awa62ehtmjfnzdn74shg9tcbbwrpfrdmeaf2t5f3pddfsj9ewpjnv7",
-  env: :test
+  test_mode: true
 
 # This configuration is loaded before any dependency and is restricted
 # to this project. If another project depends on this project, this
