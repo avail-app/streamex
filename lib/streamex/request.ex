@@ -28,7 +28,7 @@ defmodule Streamex.Request do
   Initializes a `Streamex.Request` request.
   """
   def new do
-    struct(%__MODULE__{options: default_options})
+    struct(%__MODULE__{options: default_options()})
   end
 
   @doc """
