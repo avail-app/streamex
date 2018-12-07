@@ -74,8 +74,4 @@ defmodule Streamex.Client do
     headers = [api_key_header, date_header, auth_header] ++ req.headers
     %{req | headers: headers}
   end
-
-  defp is_test_mode do
-
-  end
 end
